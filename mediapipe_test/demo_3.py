@@ -25,7 +25,11 @@ def main():
     pTime = 0
     cTime = 0
     cap = cv2.VideoCapture(0)
+<<<<<<< HEAD
     cap.set(cv2.CAP_PROP_FPS, 90)
+=======
+    cap.set(cv2.CAP_PROP_FPS , 60) 
+>>>>>>> 78224c536e2bbf448270cf2895c5431f32c2c659
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(static_image_mode=False,
                         max_num_hands=1,
@@ -41,7 +45,10 @@ def main():
 
     while True:
         success, img = cap.read()
+        width = cap.get(3)
+        height = cap.get(4)
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        #cv2.rectangle(imgRGB, (int(width*0.1),int( height*0.1)), (int(width*0.9),int( height*0.9)),(0, 255, 0), 3)
         results = hands.process(imgRGB)
         lmlist = []
 
@@ -183,7 +190,13 @@ def main():
 
             #pyautogui.dragTo((1-x_cod)*screenWidth, y_cod*screenHeight, button='left')
         else :
-            pyautogui.moveTo((1-x_cod)*screenWidth*1.2, y_cod*screenHeight*1.2)
+            sizew = (1-x_cod)*screenWidth*1.1
+            sizeh =  y_cod*screenHeight*1.1
+            if(sizew >= screenWidth):
+                sizew = (1-x_cod)*screenWidth
+            if(sizeh>= screenHeight):
+                sizeh = y_cod*screenHeight
+            pyautogui.moveTo(sizew, sizeh)
             left_click_flag = False
             right_click_flag = False
             left_dbl_click_flag = False
@@ -198,7 +211,7 @@ def main():
         pTime = cTime
 
 
-        cv2.putText(img,str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255), 3)
+        cv2.putText(img,str(int(cap.get(cv2.CAP_PROP_FPS))), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255), 3)
         #flipped = cv2.flip(img, 1)
         cv2.imshow("Image",img)
         cv2.waitKey(1)
