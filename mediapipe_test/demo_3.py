@@ -6,7 +6,16 @@ import numpy as np
 import pyautogui
 from tensorflow import keras
 
+
+
 def main():
+    left_click_flag = False
+    right_click_flag = False
+    left_dbl_click_flag = False
+    left_arrow_flag = False
+    right_arrow_flag = False
+    scroll_down_count = 2
+    scroll_up_count =2
     cod_x = ""
     cod_y = ""
     action = ""
@@ -24,19 +33,14 @@ def main():
 
     mpDraw = mp.solutions.drawing_utils
     landmarks = ["WRIST","THUMB_CMC","THUMB_MCP","THUMB_IP","THUMB_TIP","INDEX_FINGER_MCP","INDEX_FINGER_PIP","INDEX_FINGER_DIP","INDEX_FINGER_TIP","MIDDLE_FINGER_MCP","MIDDLE_FINGER_PIP","MIDDLE_FINGER_DIP","MIDDLE_FINGER_TIP","RING_FINGER_MCP","RING_FINGER_PIP","RING_FINGER_DIP","RING_FINGER_TIP","PINKY_MCP","PINKY_PIP","PINKY_DIP","PINKY_TIP"]
-    loaded_model = keras.models.load_model('models/DL_model_3.h5')
+    loaded_model = keras.models.load_model('./../models/DL_model_4.h5')
     screenWidth, screenHeight = pyautogui.size()
     #from tensorflow import keras
     #loaded_model = keras.models.load_model('./../models/DL_model.h5')
 
-    frameRxs = int(screenWidth*0.1)
-    frameRys = int(screenHeight*0.1)
-    frameRxe = int(screenWidth*0.9)
-    frameRye = int(screenHeight*0.9)
     while True:
-        success, img = cap.read()    
+        success, img = cap.read()
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        cv2.rectangle(img,(frameRxs,frameRye), (frameRxe, frameRys),(255, 0, 255), 2)
         results = hands.process(imgRGB)
         lmlist = []
 
@@ -90,36 +94,111 @@ def main():
 
                 mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
                 img = cv2.flip(img, 1)
-        if(x_cod >= 0.3 and x_cod<=0.7) and (y_cod>=0.3 and y_cod <=0.7):
-            if (predict_action == 'hold_drag') :
-                pyautogui.dragTo((1-x_cod)*screenWidth, y_cod*screenHeight, button='left')
 
-            elif (predict_action == 'left_click'):
+        if (predict_action == 'hold_drag') :
+            pyautogui.dragTo((1-x_cod)*screenWidth, y_cod*screenHeight, button='left')
+            left_click_flag = False
+            right_click_flag = False
+            left_dbl_click_flag = False
+            left_arrow_flag = False
+            right_arrow_flag = False
+            scroll_down_count = 2
+            scroll_up_count =2
+
+        elif (predict_action == 'left_click'):
+            if(left_click_flag == False):
                 pyautogui.click(button="left")
+                left_click_flag = True
+                right_click_flag = False
+                left_dbl_click_flag = False
+                left_arrow_flag = False
+                right_arrow_flag = False
+                scroll_down_count = 2
+                scroll_up_count =2
 
-            elif (predict_action == 'right_click'):
+        elif (predict_action == 'right_click'):
+            if(right_click_flag == False):
                 pyautogui.click(button= 'right')
+                left_click_flag = False
+                right_click_flag = True
+                left_dbl_click_flag = False
+                left_arrow_flag = False
+                right_arrow_flag = False
+                scroll_down_count = 2
+                scroll_up_count =2
 
-            elif predict_action == 'left_dbl_click':
+        elif predict_action == 'left_dbl_click':
+            if(left_dbl_click_flag == False):
                 pyautogui.doubleClick(button = "left")
+                left_click_flag = False
+                right_click_flag = False
+                left_dbl_click_flag = True
+                left_arrow_flag = False
+                right_arrow_flag = False
+                scroll_down_count = 2
+                scroll_up_count =2
 
-            elif predict_action == 'scrollup':
-                pyautogui.scroll(100)
+        elif predict_action == 'scrollup':
+            scroll_up_count+=1
+            pyautogui.scroll(100*int(scroll_up_count/2))
+            left_click_flag = False
+            right_click_flag = False
+            left_dbl_click_flag = False
+            left_arrow_flag = False
+            right_arrow_flag = False
+            scroll_down_count =2
 
-            elif predict_action == 'scrolldown':
-                pyautogui.scroll(-100)
+        elif predict_action == 'scrolldown':
+            scroll_down_count+=1
+            pyautogui.scroll(-100*int(scroll_down_count/2))
+            left_click_flag = False
+            right_click_flag = False
+            left_dbl_click_flag = False
+            left_arrow_flag = False
+            right_arrow_flag = False
+            scroll_up_count=2
 
-                #pyautogui.dragTo((1-x_cod)*screenWidth, y_cod*screenHeight, button='left')
+        elif predict_action == 'left_arrow':
+            if(left_arrow_flag == False):
+                pyautogui.press('right')
+                left_click_flag = False
+                right_click_flag = False
+                left_dbl_click_flag = False
+                left_arrow_flag = True
+                right_arrow_flag = False
+                scroll_down_count = 2
+                scroll_up_count =2
+    
+        elif predict_action == 'right_arrow':
+            if(right_arrow_flag == False):
+                pyautogui.press('left')
+                left_click_flag = False
+                right_click_flag = False
+                left_dbl_click_flag = False
+                left_arrow_flag = False
+                right_arrow_flag = True
+                scroll_down_count = 2
+                scroll_up_count =2
 
-            pyautogui.moveTo((1-x_cod)*screenWidth*0.1, y_cod*screenHeight*0.1)
-        else:
-            pass
+            #pyautogui.dragTo((1-x_cod)*screenWidth, y_cod*screenHeight, button='left')
+        else :
+            pyautogui.moveTo((1-x_cod)*screenWidth*1.25, y_cod*screenHeight*1.25)
+            left_click_flag = False
+            right_click_flag = False
+            left_dbl_click_flag = False
+            left_arrow_flag = False
+            right_arrow_flag = False
+            scroll_down_count = 2
+            scroll_up_count =2
+
         
         cTime = time.time()
         fps = 1/(cTime-pTime)
         pTime = cTime
 
 
+        cv2.putText(img,str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255), 3)
+        #flipped = cv2.flip(img, 1)
         cv2.imshow("Image",img)
         cv2.waitKey(1)
 
