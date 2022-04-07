@@ -25,11 +25,7 @@ def main():
     pTime = 0
     cTime = 0
     cap = cv2.VideoCapture(0)
-<<<<<<< HEAD
     cap.set(cv2.CAP_PROP_FPS, 90)
-=======
-    cap.set(cv2.CAP_PROP_FPS , 60) 
->>>>>>> 78224c536e2bbf448270cf2895c5431f32c2c659
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(static_image_mode=False,
                         max_num_hands=1,
